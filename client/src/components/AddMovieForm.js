@@ -4,54 +4,44 @@ import { Link } from 'react-router-dom';
 
 import axios from 'axios';
 
-const EditMovieForm = (props) => {
+const AddMovieForm = (props) => {
 	const { push } = useHistory();
-	const { id } = useParams();
 
-	const [movie, setMovie] = useState({
+	const [newMovie, setNewMovie] = useState({
 		title:"",
 		director: "",
 		genre: "",
 		metascore: 0,
 		description: ""
 	});
-		useEffect(() => {
-			axios.get(`http://localhost:5000/api/movies/${id}`)
-			.then(resp => {
-				setMovie(resp.data)
-			})
-			.catch(err => {
-				console.log(err)
-			})
-	}, [])
-	
+
 	const handleChange = (e) => {
-        setMovie({
-            ...movie,
+        setNewMovie({
+            ...newMovie,
             [e.target.name]: e.target.value
         });
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-		axios.put(`http://localhost:5000/api/movies/${id}`, movie)
-		.then(resp => {
-			props.setMovies(resp.data)
-			push(`/movies/${id}`)
-		})
-		.catch(err => {
-			console.log(err.response)
-		})
+		axios.post(`http://localhost:5000/api/movies`, newMovie)
+            .then(resp => {
+                props.setMovies(resp.data)
+                push('/movies')
+            })
+            .catch(err => {
+                console.log(err);
+            })
 	}
-	
-	const { title, director, genre, metascore, description } = movie;
 
+	const { title, director, genre, metascore, description } = newMovie;
+	const { id } = useParams();
     return (
 	<div className="col">
 		<div className="modal-content">
 			<form onSubmit={handleSubmit}>
 				<div className="modal-header">						
-					<h4 className="modal-title">Editing <strong>{movie.title}</strong></h4>
+					<h4 className="modal-title">Adding <strong>{newMovie.title}</strong></h4>
 				</div>
 				<div className="modal-body">					
 					<div className="form-group">
@@ -74,7 +64,7 @@ const EditMovieForm = (props) => {
 						<label>Description</label>
 						<textarea value={description} onChange={handleChange} name="description" className="form-control"></textarea>
 					</div>
-									
+
 				</div>
 				<div className="modal-footer">			    
 					<input type="submit" className="btn btn-info" value="Save"/>
@@ -85,4 +75,4 @@ const EditMovieForm = (props) => {
 	</div>);
 }
 
-export default EditMovieForm;
+export default AddMovieForm; 
